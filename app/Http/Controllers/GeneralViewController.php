@@ -12,6 +12,20 @@ class GeneralViewController extends Controller
     }
 
     public function index(){
-        return view('welcome',['user' => session('profile')]);
+        return view('welcome',['user' => session('profile'), 'apps' => 'main']);
+    }
+
+    public function project($project){
+        $user = session('profile');
+        $app = json_decode(
+            file_get_contents(app_path('Models/'.$user->username.'/app.json')),
+            true
+        );
+        foreach($app as $list){
+            if($list["nameProject"] == $project){
+                return view('project',['user' => session('profile'), 'apps' => 'main', 'project' => $project]);
+            }
+        }
+        return "project not found";
     }
 }

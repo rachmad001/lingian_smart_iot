@@ -24,3 +24,5 @@ Route::post('/login', [DataController::class, 'login']);
 
 //type => app || project
 Route::get('app/{type}', [DataController::class, 'getApp']);
+Route::post('app/project', [DataController::class, 'addProjectApp']);
+Route::delete('app/{nameProject}', [DataController::class, 'deleteProjectApp']);
