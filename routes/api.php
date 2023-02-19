@@ -22,7 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [DataController::class, 'login']);
 
-//type => app || project
+//type => app || project || device || list-devices
 Route::get('app/{type}', [DataController::class, 'getApp']);
+
 Route::post('app/project', [DataController::class, 'addProjectApp']);
+Route::post('app/device/{project}', [DataController::class, 'addProjectDevice']);
 Route::delete('app/{nameProject}', [DataController::class, 'deleteProjectApp']);

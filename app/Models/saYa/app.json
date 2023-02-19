@@ -2,6 +2,15 @@
     {
         "nameProject": "smart lab",
         "details": "hanya mengubah description",
-        "devices": []
+        "devices": [
+            {
+                "name": "access lab",
+                "type": "lampu"
+            },
+            {
+                "name": "gorden",
+                "type": "gorden"
+            }
+        ]
     }
 ]
