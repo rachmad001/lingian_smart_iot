@@ -17,6 +17,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/', [GeneralViewController::class, 'index'])->middleware('user');
     
     Route::get('/login', [GeneralViewController::class, 'login'])->name('login');
+    Route::get('/logout', [GeneralViewController::class, 'logout'])->middleware('user');
     Route::get('/{project}', [GeneralViewController::class, 'project'])->middleware('user');
+    Route::get('/{project}/{lampu}', [GeneralViewController::class, 'lampu'])->middleware('user');
+    
 });
 

@@ -12,5 +12,19 @@
                 "type": "gorden"
             }
         ]
+    },
+    {
+        "nameProject": "rumahan",
+        "details": "project rumahan",
+        "devices": [
+            {
+                "name": "lampu 1",
+                "type": "lampu"
+            },
+            {
+                "name": "testing",
+                "type": "gorden"
+            }
+        ]
     }
 ]

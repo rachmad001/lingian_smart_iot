@@ -53,10 +53,10 @@ class DataController extends Controller
             true
         );
 
-        $response = $this->curl_listProject($req,'/listProject');
+        $response = $this->curl_listProject($req, '/listProject');
 
         $remote = json_decode($response, true);
-        
+
         if ($type == 'app') {
             if (count($app) < 1) {
                 return json_encode(
@@ -123,24 +123,24 @@ class DataController extends Controller
                 $this->array_response(true, 'access granted', $tamplp),
                 JSON_PRETTY_PRINT
             );
-        } elseif($type == 'device') {
+        } elseif ($type == 'device') {
             $project = $req->query('project');
-            foreach($app as $list){
-                if($list["nameProject"] == $project){
-                    $url = "/listDevices/".$project;
-                    $rdevice = $this->curl_listProject($req,$url);
+            foreach ($app as $list) {
+                if ($list["nameProject"] == $project) {
+                    $url = "/listDevices/" . $project;
+                    $rdevice = $this->curl_listProject($req, $url);
                     $rdevice = json_decode($rdevice, true);
-                    if($rdevice["status"]){
+                    if ($rdevice["status"]) {
                         $tamp = array();
-                        for($i = 0; $i < count($rdevice["data"]); $i++){
-                            foreach($list["devices"] as $devices){
-                                if($rdevice["data"][$i] == $devices["name"] && ($devices["type"] != null || $devices["type"] != NULL) && $devices["type"] != '' ){
+                        for ($i = 0; $i < count($rdevice["data"]); $i++) {
+                            foreach ($list["devices"] as $devices) {
+                                if ($rdevice["data"][$i] == $devices["name"] && ($devices["type"] != null || $devices["type"] != NULL) && $devices["type"] != '') {
                                     array_push($tamp, $i);
                                 }
                             }
                         }
 
-                        for($i = 0; $i < count($tamp); $i++){
+                        for ($i = 0; $i < count($tamp); $i++) {
                             array_splice($rdevice["data"], $tamp[$i] - $i, 1);
                         }
 
@@ -148,9 +148,9 @@ class DataController extends Controller
                             $this->array_response(true, "Berhasil mengambil data devices", $rdevice["data"]),
                             JSON_PRETTY_PRINT
                         );
-                    }else {
+                    } else {
                         return json_encode(
-                            $this->array_response(false, "internal : ".$rdevice["msg"], []),
+                            $this->array_response(false, "internal : " . $rdevice["msg"], []),
                             JSON_PRETTY_PRINT
                         );
                     }
@@ -160,15 +160,15 @@ class DataController extends Controller
                 $this->array_response(false, "Project tidak ditemukan", []),
                 JSON_PRETTY_PRINT
             );
-        }elseif($type == 'list-devices') {
+        } elseif ($type == 'list-devices') {
             $project = $req->query('project');
             $type = $req->query('type');
             $tamp = array();
-            foreach($app as $list){
-                if($list["nameProject"] == $project){
-                    foreach($list["devices"] as $devices){
-                        if($devices["type"] == $type){
-                            $data = $this->curl_listProject($req, '/lastData/'.$project.'/'.$devices["name"]);
+            foreach ($app as $list) {
+                if ($list["nameProject"] == $project) {
+                    foreach ($list["devices"] as $devices) {
+                        if ($devices["type"] == $type) {
+                            $data = $this->curl_listProject($req, '/lastData/' . $project . '/' . $devices["name"]);
                             $devices["datas"] = json_decode($data, true);
                             array_push($tamp, $devices);
                         }
@@ -179,8 +179,7 @@ class DataController extends Controller
                 $this->array_response(true, 'access granted', $tamp),
                 JSON_PRETTY_PRINT
             );
-        }
-        else {
+        } else {
             return json_encode(
                 $this->array_response(true, 'access granted', []),
                 JSON_PRETTY_PRINT
@@ -243,10 +242,10 @@ class DataController extends Controller
             true
         );
 
-        for($i = 0; $i < count($app); $i++){
-            if($app[$i]["nameProject"] == $nameProject){
+        for ($i = 0; $i < count($app); $i++) {
+            if ($app[$i]["nameProject"] == $nameProject) {
                 array_splice($app, $i);
-                file_put_contents(app_path('Models/'.$user[0]->user.'/app.json'), json_encode($app, JSON_PRETTY_PRINT));
+                file_put_contents(app_path('Models/' . $user[0]->user . '/app.json'), json_encode($app, JSON_PRETTY_PRINT));
                 return json_encode(
                     $this->array_response(true, "Berhasil menghapus project"),
                     JSON_PRETTY_PRINT
@@ -259,7 +258,41 @@ class DataController extends Controller
         );
     }
 
-    function addProjectDevice(Request $req, $project){
+    function deleteDeviceApp(Request $req, $nameProject, $nameDevice)
+    {
+        $user = $this->get_user($req);
+
+        if (count($user) < 1) {
+            return json_encode($this->array_response(false, 'token invalid', []), JSON_PRETTY_PRINT);
+        }
+
+        $app = json_decode(
+            file_get_contents(app_path('Models/' . $user[0]->user . '/app.json')),
+            true
+        );
+
+        for ($i = 0; $i < count($app); $i++) {
+            if ($app[$i]["nameProject"] == $nameProject) {
+                for ($j = 0; $j < count($app[$i]["devices"]); $j++) {
+                    if ($app[$i]["devices"][$j]["name"] == $nameDevice) {
+                        array_splice($app[$i]["devices"], $j);
+                        file_put_contents(app_path('Models/' . $user[0]->user . '/app.json'), json_encode($app, JSON_PRETTY_PRINT));
+                        return json_encode(
+                            $this->array_response(true, "Berhasil menghapus devices"),
+                            JSON_PRETTY_PRINT
+                        );
+                    }
+                }
+            }
+        }
+        return json_encode(
+            $this->array_response(false, "Gagal menghapus devices, devices tidak ditemukan"),
+            JSON_PRETTY_PRINT
+        );
+    }
+
+    function addProjectDevice(Request $req, $project)
+    {
         $user = $this->get_user($req);
 
         if (count($user) < 1) {
@@ -284,25 +317,25 @@ class DataController extends Controller
             true
         );
 
-        for($i = 0; $i < count($app); $i++){
-            if($app[$i]["nameProject"] == $project){
+        for ($i = 0; $i < count($app); $i++) {
+            if ($app[$i]["nameProject"] == $project) {
                 $found = false;
-                
-                foreach($app[$i]["devices"] as $devices){
-                    if($devices["name"] == $req->device){
+
+                foreach ($app[$i]["devices"] as $devices) {
+                    if ($devices["name"] == $req->device) {
                         $found = true;
                         break;
                     }
                 }
-                if($found){
+                if ($found) {
                     return json_encode(
                         $this->array_response(false, "device sudah ada"),
                         JSON_PRETTY_PRINT
                     );
-                }else {
+                } else {
                     $app[$i]["devices"][] = array("name" => $req->device, "type" => $req->type);
                     $status = file_put_contents(app_path('Models/' . $user[0]->user . '/app.json'), json_encode($app, JSON_PRETTY_PRINT));
-                    
+
                     return json_encode(
                         $this->array_response(true, "device berhasil ditambahkan"),
                         JSON_PRETTY_PRINT
@@ -345,7 +378,7 @@ class DataController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => str_replace(' ','%20','http://localhost'.$route),
+            CURLOPT_URL => str_replace(' ', '%20', 'http://platform.penelitianrpla.com' . $route),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

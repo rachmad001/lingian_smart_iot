@@ -248,13 +248,13 @@
         </div>
     </div>
     <div class="footer">
-        <div class="main <?= $apps == "main" ? "active" : "not-active" ?>">
+        <div class="main <?= $apps == "main" ? "active" : "not-active" ?>" onclick="toHome()">
             <i class="fa-solid fa-house"></i>
             <p>Home</p>
         </div>
-        <div class="profile <?= $apps != "main" ? "active" : "not-active" ?>">
-            <i class="fa-solid fa-user"></i>
-            <p>Profile</p>
+        <div class="profile <?= $apps != "main" ? "active" : "not-active" ?>" onclick="logout()">
+            <i class="fa-solid fa-door-open"></i>
+            <p>Logout</p>
         </div>
     </div>
     <script>
@@ -283,6 +283,12 @@
         function closeAlertify(){
             var elm = document.getElementsByClassName("alertify")[0];
             elm.style.zIndex = "-1";
+        }
+        function toHome(){
+            window.location.href = "/"
+        }
+        function logout(){
+            window.location.href = '/logout';
         }
     </script>
     @yield('script')

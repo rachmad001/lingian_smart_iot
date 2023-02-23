@@ -27,4 +27,6 @@ Route::get('app/{type}', [DataController::class, 'getApp']);
 
 Route::post('app/project', [DataController::class, 'addProjectApp']);
 Route::post('app/device/{project}', [DataController::class, 'addProjectDevice']);
+
 Route::delete('app/{nameProject}', [DataController::class, 'deleteProjectApp']);
+Route::delete('app/device/{nameProject}/{nameDevice}', [DataController::class, 'deleteDeviceApp']);

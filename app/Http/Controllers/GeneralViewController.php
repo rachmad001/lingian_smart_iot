@@ -28,4 +28,27 @@ class GeneralViewController extends Controller
         }
         return "project not found";
     }
+
+    public function lampu($project, $lampu){
+        $user = session('profile');
+        $app = json_decode(
+            file_get_contents(app_path('Models/'.$user->username.'/app.json')),
+            true
+        );
+        foreach($app as $list){
+            if($list["nameProject"] == $project){
+                foreach($list["devices"] as $device){
+                    if($device["name"] == $lampu && $device["type"] == "lampu"){
+                        return view('lampu',['user' => session('profile'), 'apps' => 'main', 'project' => $project, 'device' => $device]);
+                    }
+                }
+            }
+        }
+        return "project not found";
+    }
+
+    public function logout(Request $req){
+        session()->flush();
+        return redirect('/login');
+    }
 }

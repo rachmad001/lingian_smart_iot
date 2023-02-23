@@ -51,12 +51,12 @@
     }
 
     .list-device .card {
-
         display: flex;
         flex-direction: column;
         padding: 10px;
         border-radius: 10px;
         box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.08);
+        position: relative;
     }
 
     .list-device .card .icon {
@@ -86,6 +86,32 @@
         margin: auto;
         margin-top: 5px;
     }
+
+    .list-device .card .options {
+        width: fit-content;
+        height: fit-content;
+        padding: 0px 4px 4px 4px;
+        font-size: 20px;
+        font-weight: 600;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: rotate(90deg);
+    }
+
+    .list-device .card .delete {
+        padding: 4px 10px 5px 10px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.08);
+        width: fit-content;
+        position: absolute;
+        top: 10px;
+        right: 22px;
+        font-size: 15px;
+        display: none;
+        color: #D90000;
+    }
 </style>
 @endsection
 
@@ -98,6 +124,18 @@
         <div class="control">
             <input type="checkbox" name="" id="" class="switch">
         </div>
+        <div class="option">...</div>
+        <div class="delete"><i class="fa-regular fa-trash-can"></i> Hapus</div>
+    </div>
+    <div class="card">
+        <div class="icon"><i class="fa-solid fa-lightbulb"></i></div>
+        <div class="name">Lampu A-12</div>
+        <div class="desc">Lampu Mati</div>
+        <div class="control">
+            <input type="checkbox" name="" id="" class="switch">
+        </div>
+        <div class="option">...</div>
+        <div class="delete"><i class="fa-regular fa-trash-can"></i> Hapus</div>
     </div> -->
 </div>
 <div class="list-device" id="gorden">
@@ -225,33 +263,80 @@
         for (var i = 0; i < list_lampu.length; i++) {
             var status = '';
             var stateswitch = '';
-            if ('V0' in list_lampu[i].datas.data) {
-                if (list_lampu[i].datas.data.V0) {
-                    status = "Hidup";
-                    stateswitch = "checked";
-                } else {
-                    status = "Mati";
-                    stateswitch = '';
+            if ('data' in list_lampu[i].datas) {
+                if ('V0' in list_lampu[i].datas.data) {
+                    if (list_lampu[i].datas.data.V0) {
+                        status = "Hidup";
+                        stateswitch = "checked";
+                    } else {
+                        status = "Mati";
+                        stateswitch = '';
+                    }
                 }
-            }
-            if ('V1' in list_lampu[i].datas.data) {
-                if (list_lampu[i].datas.data.V1) {
-                    status = "Mati";
-                } else {
-                    status = "Hidup";
-                    stateswitch = "checked";
+                if ('V1' in list_lampu[i].datas.data) {
+                    if (list_lampu[i].datas.data.V1) {
+                        status = "Mati";
+                    } else {
+                        status = "Hidup";
+                        stateswitch = "checked";
+                    }
                 }
+            } else {
+                list_lampu[i].datas = {
+                    data: {
+                        V1: 1
+                    }
+                };
+                status = "Mati";
             }
+
             list_device.innerHTML +=
-                '<div class="card">' +
+                '<div class="card" onclick="toProject(\'{{$project}}\',\'' + list_lampu[i].name + '\', event, this)">' +
                 '<div class="icon"><i class="fa-solid fa-lightbulb"></i></div>' +
                 '<div class="name">' + list_lampu[i].name + '</div>' +
                 '<div class="desc">Lampu ' + status + '</div>' +
                 '<div class="control">' +
                 '<input type="checkbox" name="" id="" class="switch" onclick="switchBtn(this, \'' + i + '\')"' + stateswitch + '>' +
+                '<div class="options" onclick="showButton(this)">...</div>' +
+                '<div class="delete" onclick="deleteDevice(\'{{$project}}\', \'' + list_lampu[i].name + '\')"><i class="fa-solid fa-trash-can"></i>Hapus</div>' +
                 '</div>' +
                 '</div>';
         }
+    }
+
+    function toProject(project, device, event, elm) {
+        console.log(event.target);
+        var optElm = elm.getElementsByClassName("options")[0];
+        var delElm = elm.getElementsByClassName("delete")[0];
+        var checkbox = elm.getElementsByClassName("switch")[0];
+        if (event.target != optElm && event.target != delElm && event.target != checkbox) {
+            window.location.href = location.origin + "/" + project + "/" + device;
+        }
+    }
+
+    function showButton(elm) {
+        var parent = elm.parentElement;
+        var btn = parent.getElementsByClassName("delete")[0];
+        if (btn.style.display == "none") {
+            btn.style.display = "block";
+        } else {
+            btn.style.display = "none";
+        }
+    }
+
+    function deleteDevice(project, device) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            var response = JSON.parse(this.responseText);
+            if (response.status) {
+                alertify.notify(response.msg, "success", 3, function() {});
+            } else {
+                alertify.notify(response.msg, "error", 3, function() {});
+            }
+        }
+        xhr.open("DELETE", "api/app/device/" + project + "/" + device, true);
+        xhr.setRequestHeader("token", "{{$user->token}}");
+        xhr.send();
     }
 
     function showGorden() {
@@ -260,14 +345,24 @@
         for (var i = 0; i < list_gorden.length; i++) {
             var status = '';
             var stateswitch = '';
-
-            if (list_gorden[i].datas.data.state) {
-                status = "Hidup";
-                stateswitch = "checked";
+            if ('data' in list_gorden[i].datas) {
+                if (list_gorden[i].datas.data.state) {
+                    status = "Hidup";
+                    stateswitch = "checked";
+                } else {
+                    status = "Mati";
+                    stateswitch = '';
+                }
             } else {
+                list_gorden[i].datas = {
+                    data: {
+                        state: 1
+                    }
+                };
                 status = "Mati";
                 stateswitch = '';
             }
+
             list_device.innerHTML +=
                 '<div class="card">' +
                 '<div class="icon"><i class="fa-solid fa-person-booth"></i></div>' +
@@ -275,6 +370,8 @@
                 '<div class="desc">Gorden ' + status + '</div>' +
                 '<div class="control">' +
                 '<input type="checkbox" name="" id="" class="switch" onclick="gordenBtn(this, \'' + i + '\')"' + stateswitch + '>' +
+                '<div class="options" onclick="showButton(this)">...</div>' +
+                '<div class="delete" onclick="deleteDevice(\'{{$project}}\', \'' + list_gorden[i].name + '\')"><i class="fa-solid fa-trash-can"></i>Hapus</div>' +
                 '</div>' +
                 '</div>';
         }
@@ -359,7 +456,7 @@
 
             }
         }
-        xhr.open("POST", "http://localhost/addData", true);
+        xhr.open("POST", "http://platform.penelitianrpla.com/addData", true);
         xhr.send(data);
     }
 
@@ -387,7 +484,7 @@
 
             }
         }
-        xhr.open("POST", "http://localhost/addData", true);
+        xhr.open("POST", "http://platform.penelitianrpla.com/addData", true);
         xhr.send(data);
     }
 </script>
