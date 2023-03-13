@@ -76,38 +76,109 @@ void loop() {
         if (doc["data"]["V0"] == "1" || doc["data"]["V0"] == 1) {
           if(!V0){
             IrSender.sendNEC(0xEF00, 0x03, true, 0);  //on 1
+            V0 = !V0;
+            V1 = false;
+            delay(500);
           }
+
         }
         if (doc["data"]["V1"] == "1" || doc["data"]["V1"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x02, true, 0);  //off 1
-        }
-        if (doc["data"]["V2"] == "1" || doc["data"]["V2"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x00, true, 0);  //terang 1
-        }
-        if (doc["data"]["V3"] == "1" || doc["data"]["V3"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x01, true, 0);  //redup 1
-        }
-        if (
-          doc["data"]["V8"] == "1" || doc["data"]["V8"] == 1 || doc["data"]["V9"] == "1" || doc["data"]["V9"] == 1 || doc["data"]["V10"] == "1" || doc["data"]["V10"] == 1 || doc["data"]["V11"] == "1" || doc["data"]["V11"] == 1) {
-          if (doc["data"]["V8"] == "1" || doc["data"]["V8"] == 1) {
-            IrSender.sendNEC(0xEF00, 0x0B, true, 0);  //FADE
-          }
-          if (doc["data"]["V9"] == "1" || doc["data"]["V9"] == 1) {
-            IrSender.sendNEC(0xEF00, 0x0F, true, 0);  //STROBE
-          }
-          if (doc["data"]["V10"] == "1" || doc["data"]["V10"] == 1) {
-            IrSender.sendNEC(0xEF00, 0x13, true, 0);  //SMOTH
-          }
-          if (doc["data"]["V11"] == "1" || doc["data"]["V11"] == 1) {
-            IrSender.sendNEC(0xEF00, 0x17, true, 0);  //FLASH
+          if(!V1){
+            IrSender.sendNEC(0xEF00, 0x02, true, 0);  //off 1
+            V0 = false;
+            V1 = !V1;
+            delay(500);
           }
           return;
         }
+        if (doc["data"]["V2"] == "1" || doc["data"]["V2"] == 1) {
+          if(!V2){
+            V2 = !V2;
+            V3 = false;
+            IrSender.sendNEC(0xEF00, 0x00, true, 0);  //terang 1
+            delay(500);            
+          }
+        }
+        if (doc["data"]["V3"] == "1" || doc["data"]["V3"] == 1) {
+          if(!V3){
+            V2 = false;
+            V3 = !V3;
+            IrSender.sendNEC(0xEF00, 0x01, true, 0);  //redup 1
+            delay(500);
+          }
+        }
+        if (
+          doc["data"]["V8"] == "1" || doc["data"]["V8"] == 1 || 
+          doc["data"]["V9"] == "1" || doc["data"]["V9"] == 1 || 
+          doc["data"]["V10"] == "1" || doc["data"]["V10"] == 1 || 
+          doc["data"]["V11"] == "1" || doc["data"]["V11"] == 1) 
+        {
+          if (doc["data"]["V8"] == "1" || doc["data"]["V8"] == 1) {
+            if(!V8){
+              IrSender.sendNEC(0xEF00, 0x0B, true, 0);  //FADE
+              V8 = !V8;
+              V9 = false;
+              V10 = false;
+              V11 = false;
+            }
+          }
+          if (doc["data"]["V9"] == "1" || doc["data"]["V9"] == 1) {
+            if(!V9){
+              IrSender.sendNEC(0xEF00, 0x0F, true, 0);  //STROBE
+              V8 = false;
+              V9 = !V9;
+              V10 = false;
+              V11 = false;
+            }
+          }
+          if (doc["data"]["V10"] == "1" || doc["data"]["V10"] == 1) {
+            if(!V10){
+              IrSender.sendNEC(0xEF00, 0x13, true, 0);  //SMOTH
+              V8 = false;
+              V9 = false;
+              V10 = !V10;
+              V11 = false;
+            }
+          }
+          if (doc["data"]["V11"] == "1" || doc["data"]["V11"] == 1) {
+            IrSender.sendNEC(0xEF00, 0x17, true, 0);  //FLASH
+            if(!V11){
+              IrSender.sendNEC(0xEF00, 0x13, true, 0);  //SMOTH
+              V8 = false;
+              V9 = false;
+              V10 = false;
+              V11 = !V11;
+            }
+          }
+          return;
+        }
+
+        V8 = false;
+        V9 = false;
+        V10 = false;
+        V11 = false;
+        
         if (doc["data"]["V4"] == "1" || doc["data"]["V4"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x4, true, 0);  //merah 1
+          if(!V4){
+            IrSender.sendNEC(0xEF00, 0x4, true, 0);  //merah 1
+            V4 = !V4;
+            V5 = false;
+            V17 = false;
+            V18 = false;
+            V22 = false;
+            delay(500);
+          }
         }
         if (doc["data"]["V5"] == "1" || doc["data"]["V5"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x5, true, 0);  //hijau 1
+          if(!V5){
+            IrSender.sendNEC(0xEF00, 0x5, true, 0);  //hijau 1
+            V4 = false;
+            V5 = !V5;
+            V17 = false;
+            V18 = false;
+            V22 = false;
+            delay(500);
+          }
         }
         if (doc["data"]["V6"] == "1" || doc["data"]["V6"] == 1) {
           IrSender.sendNEC(0xEF00, 0x06, true, 0);  //biru 1
@@ -134,10 +205,26 @@ void loop() {
           IrSender.sendNEC(0xEF00, 0x0D, true, 0);  //birulangit
         }
         if (doc["data"]["V17"] == "1" || doc["data"]["V17"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x0E, true, 0);  //ungu 1
+          if(!V17){
+            IrSender.sendNEC(0xEF00, 0x0E, true, 0);  //ungu 1
+            V4 = false;
+            V5 = false;
+            V17 = !V17;
+            V18 = false;
+            V22 = false;
+            delay(500);
+          }
         }
         if (doc["data"]["V18"] == "1" || doc["data"]["V18"] == 1) {
-          IrSender.sendNEC(0xEF00, 0x10, true, 0);  //KUNING 1
+          if(!V18){
+            IrSender.sendNEC(0xEF00, 0x10, true, 0);  //KUNING 1
+            V4 = false;
+            V5 = false;
+            V17 = false;
+            V18 = !V18;
+            V22 = false;
+            delay(500);
+          }
         }
         if (doc["data"]["V19"] == "1" || doc["data"]["V19"] == 1) {
           IrSender.sendNEC(0xEF00, 0x11, true, 0);  //HIJAUKEBIRUAN
@@ -149,7 +236,15 @@ void loop() {
           IrSender.sendNEC(0xEF00, 0x14, true, 0);  //KUNINGMUDA
         }
         if (doc["data"]["V22"] == "1" || doc["data"]["V22"] == 1) {
+          if(!V22){
           IrSender.sendNEC(0xEF00, 0x15, true, 0);  //DARKBLUEGREEAN
+            V4 = false;
+            V5 = false;
+            V17 = false;
+            V18 = false;
+            V22 = !V22;
+            delay(500);
+          }
         }
         if (doc["data"]["V23"] == "1" || doc["data"]["V23"] == 1) {
           IrSender.sendNEC(0xEF00, 0x16, true, 0);  //PINK
