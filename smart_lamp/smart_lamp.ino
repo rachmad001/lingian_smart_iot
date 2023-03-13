@@ -150,6 +150,11 @@ void loop() {
               V11 = !V11;
             }
           }
+            V4 = false;
+            V5 = false;
+            V17 = false;
+            V18 = false;
+            V22 = false;
           return;
         }
 
